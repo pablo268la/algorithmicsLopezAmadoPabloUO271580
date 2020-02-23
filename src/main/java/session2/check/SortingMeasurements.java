@@ -4,8 +4,8 @@ import session2.*;
 
 public class SortingMeasurements {
 	private static int differentSizes = 30; //how many sizes do you want to use in the measurements 
-	private static int nTimes = 1000; //number of repetitions of the executions
-	private static String option = "sorted"; //working with sorted/inversely sorted/random vectors
+	private static int nTimes = 100; //number of repetitions of the executions
+	private static String option = "random"; //working with sorted/inversely sorted/random vectors
 
 	/** This program could be used to test all the sorting algorithms
 	 * */
@@ -19,7 +19,7 @@ public class SortingMeasurements {
 		int n = it[0];
 		System.out.println("Different sizes = " + i);
 		
-		measureTimes(new Insertion(n), it);
+		//measureTimes(new Insertion(n), it);
 		
 		//measureTimes(new Selection(n), it);
 		
@@ -27,7 +27,7 @@ public class SortingMeasurements {
 		
 		//measureTimes(new QuicksortFateful(n), it);
 		
-		//measureTimes(new QuicksortCentralElement(n), it);
+		measureTimes(new QuicksortCentralElement(n), it);
 		
 		//measureTimes(new QuicksortMedianOfThree(n), it);
 	}
