@@ -58,16 +58,41 @@ public class Gilito2 {
 	 *         (O(n)) in the worst and average cases
 	 */
 	public int calculate() {
-		int res = 0;
-		for (int i = 0; i < this.coins.length / 2; i++) {
-			res = balance(2 * i, 2 * i, 2 * i + 1, 2 * i + 1); // just one coin to the left and one coin to the right
-																// side
-			if (res == 1)
-				return 2 * i; // fake coin is the left coin
-			else if (res == 2)
-				return 2 * i + 1; // fake coin is the right coin
+		return calculate(0, this.coins.length, 1);
+
+	}
+
+	private int calculate(int i, int j, int rep) {
+		if ((j - i) < 2) {
+			int end = balance(i, i, j, j);
+			if (end == 1)
+				return i;
+			else if (end == 2)
+				return j;
 		}
-		return (this.coins.length - 1); // just in case n is odd and fake coin is the last one
+		if ((i + j) % 2 != 0) {
+			int ult = j;
+			int penult = j - 1;
+			int aux = balance(penult, penult, ult, ult);
+			if (aux == 1)
+				return penult;
+			else if (aux == 2)
+				return ult;
+			aux = balance(i, (i + j) / 2, (i + j) / 2 + 1, j);
+
+			if (aux == 1)
+				return calculate(i, (i + j) / (rep + 1), rep + 1);
+			else if (aux == 2)
+				return calculate((i + j) / (rep + 1) + 1, j, rep + 1);
+		} else {
+			int aux = balance(i, (i + j) / 2, (i + j) / 2 + 1, j-1);
+
+			if (aux == 1)
+				return calculate(i, (i + j) / (rep + 1), rep + 1);
+			else if (aux == 2)
+				return calculate((i + j) / (rep + 1) + 1, j - 1, rep + 1);
+		}
+		return -1;
 	}
 
 	public static void main(String arg[]) {

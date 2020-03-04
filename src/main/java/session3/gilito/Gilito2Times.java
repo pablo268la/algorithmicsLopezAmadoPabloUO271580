@@ -1,0 +1,25 @@
+package session3.gilito;
+
+import java.util.Random;
+
+public class Gilito2Times {
+	public static void main(String arg[]) {
+		int nTimes = 10;
+		long t1, t2;
+		int position = 0;
+		Random random = new Random();
+		for (int n = 10; n < Integer.MAX_VALUE; n *= 2) {
+			Gilito2 gilito = new Gilito2(n);
+			for (int i = 0; i < n; i++)
+				gilito.setCoinWeight(i, Gilito2.REAL_WEIGHT); // authentic coin weight
+			gilito.setCoinWeight(random.nextInt(n), Gilito2.FAKE_WEIGHT); // worst case (last coin is the fake one)
+
+			t1 = System.currentTimeMillis();
+			for (int i = 0; i < nTimes; i++)
+				position = gilito.calculate();
+			t2 = System.currentTimeMillis();
+			System.out.println(String.format("CLASSIC: NCOINS=%d FAKE_POSITION=%d ENERGY_USED=%d TIME=%d NTIMES=%d", n,
+					position, gilito.getUsedWatts() / nTimes, t2 - t1, nTimes));
+		}
+	}
+}
