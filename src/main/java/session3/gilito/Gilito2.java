@@ -58,41 +58,54 @@ public class Gilito2 {
 	 *         (O(n)) in the worst and average cases
 	 */
 	public int calculate() {
-		return calculate(0, this.coins.length, 1);
+		return calculate3(0, this.coins.length - 1);
 
 	}
 
-	private int calculate(int i, int j, int rep) {
-		if ((j - i) < 2) {
-			int end = balance(i, i, j, j);
-			if (end == 1)
-				return i;
-			else if (end == 2)
-				return j;
-		}
-		if ((i + j) % 2 != 0) {
-			int ult = j;
-			int penult = j - 1;
-			int aux = balance(penult, penult, ult, ult);
-			if (aux == 1)
-				return penult;
-			else if (aux == 2)
-				return ult;
-			aux = balance(i, (i + j) / 2, (i + j) / 2 + 1, j);
+	private int calculate(int i, int j) {
+		int medio = (i + j) / 2;
+		if (i < j) {
+			// If odd size, check the last
+			if ((i + j) % 2 == 0) {
+				int aux = balance(j - 1, j - 1, j, j);
+				if (aux == 1) {
+					return j - 1;
+				} else if (aux == 2) {
+					return j;
+				} else {
+					j--;
+				}
 
-			if (aux == 1)
-				return calculate(i, (i + j) / (rep + 1), rep + 1);
-			else if (aux == 2)
-				return calculate((i + j) / (rep + 1) + 1, j, rep + 1);
-		} else {
-			int aux = balance(i, (i + j) / 2, (i + j) / 2 + 1, j-1);
+			}
+			int bal = balance(i, medio, medio + 1, j);
 
-			if (aux == 1)
-				return calculate(i, (i + j) / (rep + 1), rep + 1);
-			else if (aux == 2)
-				return calculate((i + j) / (rep + 1) + 1, j - 1, rep + 1);
+			if (bal == 1) {
+				return calculate(i, medio);
+			} else if (bal == 2) {
+				return calculate(medio + 1, j);
+			}
+
 		}
-		return -1;
+		return i;
+	}
+
+	private int calculate3(int left, int right) {
+		int gap = right - left;
+		int med1 = left + gap / 3;
+		int med2 = left + 2 * gap / 3;
+
+		if (left < right) {
+			int aux = balance(left, med1, med1 + 1, med2);
+			if (aux == 1) {
+				return calculate3(left, med1);
+			} else if (aux == 2) {
+				return calculate3(med1 + 1, med2);
+			} else {
+				return calculate3(med2 + 1, right);
+			}
+		}
+
+		return left;
 	}
 
 	public static void main(String arg[]) {
