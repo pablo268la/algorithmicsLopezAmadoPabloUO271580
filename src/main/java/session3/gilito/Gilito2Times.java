@@ -8,11 +8,12 @@ public class Gilito2Times {
 		long t1, t2;
 		int position = 0;
 		Random random = new Random();
-		for (int n = 10; n < Integer.MAX_VALUE; n *= 2) {
+		for (int n = 100; n < Integer.MAX_VALUE; n *= 2) {
 			Gilito2 gilito = new Gilito2(n);
 			for (int i = 0; i < n; i++)
 				gilito.setCoinWeight(i, Gilito2.REAL_WEIGHT); // authentic coin weight
-			gilito.setCoinWeight(random.nextInt(n), Gilito2.FAKE_WEIGHT); // worst case (last coin is the fake one)
+			gilito.setCoinWeight(n-1, Gilito2.FAKE_WEIGHT); // worst case (last coin is the
+																	// fake one)
 
 			t1 = System.currentTimeMillis();
 			for (int i = 0; i < nTimes; i++)

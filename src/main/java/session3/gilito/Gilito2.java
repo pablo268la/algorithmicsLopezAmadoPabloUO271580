@@ -58,12 +58,19 @@ public class Gilito2 {
 	 *         (O(n)) in the worst and average cases
 	 */
 	public int calculate() {
-		return calculate3(0, this.coins.length - 1);
+		return calculate(0, this.coins.length - 1);
 
 	}
 
 	private int calculate(int i, int j) {
 		int medio = (i + j) / 2;
+		if (j - i == 1) {
+			int a = balance(i, i, j, j);
+			if (a == 1)
+				return i;
+			else
+				return j;
+		}
 		if (i < j) {
 			// If odd size, check the last
 			if ((i + j) % 2 == 0) {
@@ -74,38 +81,25 @@ public class Gilito2 {
 					return j;
 				} else {
 					j--;
+					int bal = balance(i, medio - 1, medio, j);
+					if (bal == 1) {
+						return calculate(i, medio - 1);
+					} else if (bal == 2) {
+						return calculate(medio, j);
+					}
 				}
 
-			}
-			int bal = balance(i, medio, medio + 1, j);
-
-			if (bal == 1) {
-				return calculate(i, medio);
-			} else if (bal == 2) {
-				return calculate(medio + 1, j);
+			} else {
+				int bal = balance(i, medio, medio + 1, j);
+				if (bal == 1) {
+					return calculate(i, medio);
+				} else if (bal == 2) {
+					return calculate(medio + 1, j);
+				}
 			}
 
 		}
 		return i;
-	}
-
-	private int calculate3(int left, int right) {
-		int gap = right - left;
-		int med1 = left + gap / 3;
-		int med2 = left + 2 * gap / 3;
-
-		if (left < right) {
-			int aux = balance(left, med1, med1 + 1, med2);
-			if (aux == 1) {
-				return calculate3(left, med1);
-			} else if (aux == 2) {
-				return calculate3(med1 + 1, med2);
-			} else {
-				return calculate3(med2 + 1, right);
-			}
-		}
-
-		return left;
 	}
 
 	public static void main(String arg[]) {
