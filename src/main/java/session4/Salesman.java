@@ -185,7 +185,8 @@ public class Salesman {
 		Collections.sort(costs);
 
 		for (int i = 0; i < costs.size(); i++) {
-			if (conexions[costs.get(i).sourceNode] < 2 && conexions[costs.get(i).targetNode] < 2) {
+			if (conexions[costs.get(i).sourceNode] < 2 && conexions[costs.get(i).targetNode] < 2
+					&& component.getComponent(costs.get(i).sourceNode) != component.getComponent(costs.get(i).targetNode)) {
 				conexions[costs.get(i).sourceNode]++;
 				conexions[costs.get(i).targetNode]++;
 				sol.add(costs.get(i));
