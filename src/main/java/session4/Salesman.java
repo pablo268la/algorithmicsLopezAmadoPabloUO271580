@@ -20,7 +20,8 @@ public class Salesman {
 	/**
 	 * Constructor that loads the graph from a file
 	 * 
-	 * @param fileName File name in which the data is contained
+	 * @param fileName
+	 *            File name in which the data is contained
 	 */
 	public Salesman(String fileName) {
 		matrix = createMatrixFromFile(fileName);
@@ -30,8 +31,10 @@ public class Salesman {
 	/**
 	 * Constructor that creates a random graph
 	 * 
-	 * @param nNodes Number of nodes of the graph
-	 * @param max    Maximum value for the random values (weights)
+	 * @param nNodes
+	 *            Number of nodes of the graph
+	 * @param max
+	 *            Maximum value for the random values (weights)
 	 */
 	public Salesman(int nNodes, int max) {
 		this.nNodes = nNodes;
@@ -43,8 +46,10 @@ public class Salesman {
 	 * It generates a symmetrical triangular matrix with respect to the main
 	 * diagonal.
 	 * 
-	 * @param size Size of the matrix
-	 * @param max  Maximum value for the random values (weights)
+	 * @param size
+	 *            Size of the matrix
+	 * @param max
+	 *            Maximum value for the random values (weights)
 	 **/
 	private int[][] createMatrix(int size, int max) {
 		int[][] elements = new int[size][size];
@@ -65,7 +70,8 @@ public class Salesman {
 	/**
 	 * Load the integer array values from a file
 	 * 
-	 * @param fileName File name in which the data is contained
+	 * @param fileName
+	 *            File name in which the data is contained
 	 **/
 	private int[][] createMatrixFromFile(String fileName) {
 		BufferedReader file = null;
@@ -130,7 +136,8 @@ public class Salesman {
 	 * Calculate the Hamilton cycle. The heuristic is to get the lowest cost edge
 	 * from current node to one of the no connected nodes
 	 * 
-	 * @param sourceNode The starting node
+	 * @param sourceNode
+	 *            The starting node
 	 * @return The cost of the cycle from the source to itself iterating through all
 	 *         the other nodes once
 	 */
@@ -175,26 +182,120 @@ public class Salesman {
 		int[] conexions = new int[nNodes];
 		Component component = new Component(nNodes);
 		List<Edge> costs = new ArrayList<Edge>();
-		List<Edge> sol = new ArrayList<Edge>();
+		List<Edge> temSol = new ArrayList<Edge>();
 		int cost = 0;
-		for (int i = 0; i < nNodes; i++)
-			for (int j = 0; j < nNodes; j++)
-				if (i != j)
-					costs.add(new Edge(i, j, matrix[i][j]));
 
+		addConexions(costs);
 		Collections.sort(costs);
+		sortFirst(costs);
+		cost = addCosts(conexions, component, costs, temSol, cost);
+		cost = addLastCost(conexions, temSol, cost);
 
-		for (int i = 0; i < costs.size(); i++) {
-			if (conexions[costs.get(i).sourceNode] < 2 && conexions[costs.get(i).targetNode] < 2
-					&& component.getComponent(costs.get(i).sourceNode) != component.getComponent(costs.get(i).targetNode)) {
-				conexions[costs.get(i).sourceNode]++;
-				conexions[costs.get(i).targetNode]++;
-				sol.add(costs.get(i));
-				cost += costs.get(i).cost;
+		reconstructPath(temSol, conexions);
+		return cost;
+	}
+
+	private void addConexions(List<Edge> costs) {
+		int lastCost = -1;
+		for (int i = 1; i < nNodes; i++)
+			for (int j = 0; j < i; j++)
+				if (i != j && matrix[i][j] != lastCost) {
+					costs.add(new Edge(j, i, matrix[i][j]));
+					lastCost = matrix[i][j];
+				}
+	}
+
+	private int addLastCost(int[] conexions, List<Edge> temSol, int cost) {
+		int t = 0;
+		int aux = 0;
+		for (int i = 0; i < conexions.length; i++) {
+			if (conexions[i] == 1 && t == 0) {
+				aux = i;
+				t++;
+			} else if (conexions[i] == 1 && t == 1) {
+				conexions[i]++;
+				conexions[aux]++;
+				temSol.add(new Edge(aux, i, matrix[aux][i]));
+				cost += matrix[aux][i];
 			}
 		}
-
 		return cost;
+	}
+
+	private int addCosts(int[] conexions, Component component, List<Edge> costs, List<Edge> temSol, int cost) {
+		for (int i = 0; i < costs.size(); i++) {
+			int target = costs.get(i).targetNode;
+			int source = costs.get(i).sourceNode;
+			if (conexions[source] < 2 && conexions[target] < 2
+					&& component.getComponent(source) != component.getComponent(target)) {
+				conexions[source]++;
+				conexions[target]++;
+				temSol.add(costs.get(i));
+				cost += costs.get(i).cost;
+				component.mergeComponents(source, target);
+			}
+		}
+		return cost;
+	}
+
+	private void sortFirst(List<Edge> costs) {
+		int i = 0;
+		int minNode = Integer.MAX_VALUE;
+		int last = 0;
+		int n = 0;
+		for (; i < costs.size() && n < 2; i++) {
+			if (costs.get(i).sourceNode == 0) {
+				if (costs.get(i).targetNode < minNode) {
+					minNode = costs.get(i).targetNode;
+					last = i;
+				}
+				n++;
+			}
+		}
+		int j = last;
+		while (j != 0) {
+			Edge aux = costs.get(j - 1);
+			costs.set(j - 1, costs.get(j));
+			costs.set(j, aux);
+			j--;
+		}
+
+	}
+
+	private void reconstructPath(List<Edge> temSol, int[] conexions) {
+		sortFirst(temSol);
+		int source = temSol.get(0).sourceNode;
+		int target = temSol.get(0).targetNode;
+		for (int i = 0; i < temSol.size(); i++) {
+			if (conexions[source] == 3) {
+				sol[i] = target;
+				conexions[target]++;
+			} else {
+				sol[i] = source;
+				conexions[source]++;
+			}
+			boolean foundNext = false;
+			for (int j = 0; j < temSol.size(); j++) {
+				if (temSol.get(j).sourceNode == target && conexions[target] == 2
+						&& temSol.get(j).targetNode != source) {
+					source = target;
+					target = temSol.get(j).targetNode;
+					foundNext = true;
+					break;
+				}
+			}
+			if (!foundNext) {
+				for (int j = 0; j < temSol.size(); j++) {
+					if (temSol.get(j).targetNode == target && temSol.get(j).sourceNode != source) {
+						source = target;
+						target = temSol.get(j).sourceNode;
+						foundNext = true;
+						break;
+					}
+				}
+			}
+		}
+		sol[sol.length - 1] = sol[0];
 	}
 
 	/**
