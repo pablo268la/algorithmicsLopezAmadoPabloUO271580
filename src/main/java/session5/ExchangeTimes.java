@@ -1,5 +1,4 @@
-import session5.Exchange;
-
+package session5;
 public class ExchangeTimes {
 
 	public static void main(String[] args) {
