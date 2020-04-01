@@ -35,6 +35,7 @@ public class Boggle {
 
 	public Boggle(String dictionaryFileName, int tableSize) {
 		readDictionaryFromFile(dictionaryFileName);
+		size = tableSize;
 		letters = new Character[size][size];
 		visited = new boolean[size][size];
 		solution = new char[MAX_LENGTH_WORD > (size * size) ? (size * size) : MAX_LENGTH_WORD];
@@ -42,7 +43,7 @@ public class Boggle {
 	}
 
 	private void fillRandomLetters() {
-		for (int i = 0; i < letters[0].length; i++) {
+		for (int i = 0; i < letters.length; i++) {
 			for (int j = 0; j < letters[0].length; j++) {
 				Collections.shuffle(lettersList);
 				letters[i][j] = lettersList.get(0);
@@ -73,7 +74,7 @@ public class Boggle {
 	}
 
 	public void findSolutions() {
-		for (int i = 0; i < letters[0].length; i++)
+		for (int i = 0; i < letters.length; i++)
 			for (int j = 0; j < letters[0].length; j++) {
 				backtracking(0, i, j);
 				visited[i][j] = false;
@@ -110,32 +111,41 @@ public class Boggle {
 	private boolean checkIfSolution(int level) {
 		String string = new String(solution).trim();
 
-		
 		if (string.length() == 1) {
-			if (oneLetter.contains(string) && !solutions.contains(string)) {
+			if (oneLetter.contains(string)) {
 				totalPoints += points.get(level + 1);
 				solutions.add(string);
+				oneLetter.remove(string);
 				return true;
 			}
 		}
 		if (string.length() == 2) {
-			if (twoLetter.contains(string) && !solutions.contains(string)) {
+			if (twoLetter.contains(string) ) {
 				totalPoints += points.get(level + 1);
 				solutions.add(string);
+				twoLetter.remove(string);
 				return true;
 			}
 		}
 		if (string.length() > 2)// not one character string
-			if (dict.containsKey(string.substring(0, 3))) { // dict contains start of string
-				if (dict.get(string.substring(0, 3)).contains(string)) { // start of string contains
-					if (!solutions.contains(string)) {
+			if (dict.containsKey(string.substring(0, 3))) { // dict contains start of string [ dictionary -> all bef rea
+															// ...]
+				if (dict.get(string.substring(0, 3)).contains(string)) { // start of string array contains the string [
+																			// rea -> ready reaction ...]
+					if (true) {
 						totalPoints += points.get(level + 1);
 						solutions.add(string);
+						dict.get(string.substring(0, 3)).remove(string);
 					}
-				} else {
+				} else { // if not contains the full word
 					ArrayList<String> a = dict.get(string.substring(0, 3));
 					for (String s : a) {
-						if (s.contains(string))
+						if (s.contains(string)) // check if at
+																			// least is the
+																			// initial of
+																			// some other
+																			// word not in
+																			// the solution
 							return true;
 					}
 					return false;
