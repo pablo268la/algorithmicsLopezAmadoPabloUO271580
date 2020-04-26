@@ -10,22 +10,22 @@ import java.util.List;
 
 public class Boggle {
 
-	private Character[][] letters;
-	private boolean[][] visited;
-	private int size;
-	private int totalPoints;
+	protected Character[][] letters;
+	protected boolean[][] visited;
+	protected int size;
+	protected int totalPoints;
 
-	private char[] solution;
-	private List<String> solutions = new ArrayList<String>();
+	protected char[] solution;
+	protected List<String> solutions = new ArrayList<String>();
 
-	private HashMap<String, ArrayList<String>> dict = new HashMap<>();
-	private ArrayList<String> oneLetter = new ArrayList<>();
-	private ArrayList<String> twoLetter = new ArrayList<>();
+	protected HashMap<String, ArrayList<String>> dict = new HashMap<>();
+	protected ArrayList<String> oneLetter = new ArrayList<>();
+	protected ArrayList<String> twoLetter = new ArrayList<>();
 
-	private final static int MAX_LENGTH_WORD = 10;
+	protected final static int MAX_LENGTH_WORD = 10;
 
-	private List<Integer> points = Arrays.asList(0, 0, 1, 2, 5, 7, 9, 12, 15, 19, 24);
-	private List<Character> lettersList = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+	protected List<Integer> points = Arrays.asList(0, 0, 1, 2, 5, 7, 9, 12, 15, 19, 24);
+	protected List<Character> lettersList = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
 			'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
 
 	public Boggle(String dictionaryFileName, String tableFileName) {
@@ -83,7 +83,7 @@ public class Boggle {
 		Collections.sort(solutions);
 	}
 
-	private void backtracking(int level, int i, int j) {
+	protected void backtracking(int level, int i, int j) {
 		if (level >= solution.length)
 			return;
 		if (i < 0 || i >= size || j < 0 || j >= size)
@@ -108,7 +108,7 @@ public class Boggle {
 
 	}
 
-	private boolean checkIfSolution(int level) {
+	protected boolean checkIfSolution(int level) {
 		String string = new String(solution).trim();
 
 		if (string.length() == 1) {
